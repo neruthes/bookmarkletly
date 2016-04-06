@@ -25,6 +25,13 @@
 	body[data-string-empty="true"] .fade-when-input-box-empty {
 		opacity: 0;
 	}
+	.dim-unless-hover {
+		opacity: 0.75;
+		transition: none !important;
+	}
+	.dim-unless-hover:hover {
+		opacity: 1;
+	}
 	</style>
     <style type="text/css">
 	._desktop-linecompact {
@@ -46,6 +53,7 @@
 	}
 	</style>
 	<meta name="pridejs-config-duration" content="regular">
+	<link rel="stylesheet" href="bower_components/octicons/octicons/octicons.css">
 	<link href='https://fonts.googleapis.com/css?family=Source+Code+Pro:300,400,700' rel='stylesheet' type='text/css'>
 	<style type="text/css">
 	* {
@@ -58,9 +66,7 @@
 		font-size: 18px;
 		font-weight: 300;
 		color: #FFF;
-		/*color: #666;*/
 		background: #FF5D68;
-		/*background: #F2F2F2;*/
 		padding: 0;
 		margin: 0;
 	}
@@ -73,14 +79,16 @@
 	.content {
 		margin: 1.6rem 0 0;
 	}
-	h1 {
+	header h1 {
 		font-size: 26px;
 		letter-spacing: 0.02rem;
-		height: 0px;
-		margin: 1.6rem 0 0;
-		overflow: hidden;
+		margin: 1.8rem 0 0;
 	}
-	h2 {
+	header p {
+		font-size: 16px;
+		margin: 0;
+	}
+	.content h2 {
 		font-size: 16px;
 		font-weight: 500;
 		letter-spacing: 0.12rem;
@@ -123,13 +131,6 @@
 
 		padding: 2rem 0 2rem;
 	}
-	footer a {
-		opacity: 0.85;
-		transition: none;
-	}
-	footer a:hover {
-		opacity: 1;
-	}
 	/* ---------------------------------------- */
 	a {
 		color: inherit;
@@ -152,7 +153,11 @@
 </head>
 <body onclick="focus()" data-string-empty="true">
 	<div class="cont" onclick="focus()">
-		<h1><a href="./">Bookmarkletly</a></h1>
+		<header style="position: relative;">
+			<h1><a href="./">Bookmarkletly</a></h1>
+			<p class="desktop-only">Turn your JS on GitHub into bookmarklet</p>
+			<a class="desktop-only" href="https://github.com/JoyNeop/bookmarkletly"><span class="dim-unless-hover mega-octicon octicon-mark-github" style="position: absolute; top: 5px; right: 0;"></span></a>
+		</header>
 		<div class="content" id="ta-original-container">
 			<h2><label for="ta-original">GitHub File URL</label></h2>
 			<textarea id="ta-original" autofocus></textarea>
@@ -162,16 +167,16 @@
 			<textarea id="ta-encoded" readonly></textarea>
 		</div>
 		<footer class="desktop-only fade-when-input-box-empty">
-			<div class="_desktop-linecompact english-only">
+			<div class="dim-unless-hover _desktop-linecompact english-only">
 				<a href="//joyneop.xyz/">Created by <strong>Joy Neop</strong>.</a>
 			</div>
-			<div class="_desktop-linecompact chinese-only">
+			<div class="dim-unless-hover _desktop-linecompact chinese-only">
 				<a href="//joyneop.xyz/">一个 <strong>Joy Neop</strong> 作品.</a>
 			</div>
-            <div class="_desktop-linecompact english-only">
-				<a href="//rawgit.com/" rel="nofollow">Re-delivery service by RawGit.</a>
+            <div class="dim-unless-hover _desktop-linecompact english-only">
+				<a href="//rawgit.com/" rel="nofollow">File service by RawGit.</a>
 			</div>
-			<div class="_desktop-linecompact chinese-only">
+			<div class="dim-unless-hover _desktop-linecompact chinese-only">
 				<a href="//rawgit.com/" rel="nofollow">由 RawGit 传输.</a>
 			</div>
 		</footer>
@@ -184,16 +189,17 @@
         */
         var githubUrlRegex = /^https:\/\/github\.com\/([\w\_\-\.]+)\/([\w\_\-\.]+)\/blob\/([\w\_\-\.]+)\/([\w\_\-\.\/]+)$/;
         if (url.match(githubUrlRegex)) {
-            return encodeURI('javascript:(function(){var x=new XMLHttpRequest();x.open("GET","__URL__",true);x.onload=function(e){Function(e.target.responseText)()};x.send()})()'.replace('__URL__', url.replace(githubUrlRegex, 'https://cdn.rawgit.com/$1/$2/$3/$4')));
+            return encodeURI('javascript:(function(){var x=new XMLHttpRequest();x.open("GET","__URL__",true);x.onload=function(e){Function(e.target.responseText)()};x.send()})()'.replace('__URL__', url.replace(githubUrlRegex, 'https://cdn.rawgit.com/$1/$2/$3/$4'))).replace(/(%7B|%7D|%22)/g, function (arg) { return decodeURI(arg) });
         } else {
             return '';
-        }
+        };
 	};
 
 	var userInputEventHandler = function () {
 		document.getElementById('ta-encoded').value = justEncode(document.getElementById('ta-original').value);
 		if (document.getElementById('ta-original').value.length !== 0) {
 			document.body.setAttribute('data-string-empty', 'false');
+			document.body.style.backgroundColor = '#05BDF8';
 		};
 	};
 	document.getElementById('ta-original').addEventListener('input', userInputEventHandler);
